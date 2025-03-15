@@ -1,38 +1,30 @@
-// Using a simple mock data approach here
-const mockJobs = [
-    {
-      id: 1,
-      title: 'Frontend Developer',
-      location: 'New York',
-      type: 'Full-time',
-      description: 'Develop user-friendly web interfaces.'
-    },
-    {
-      id: 2,
-      title: 'Backend Developer',
-      location: 'Remote',
-      type: 'Part-time',
-      description: 'Build robust backend services.'
-    },
-    // Add more job objects as needed
-  ];
-  
-  export async function GET() {
-    try {
-      // In a real scenario, you might fetch from an external API here
-      // const res = await fetch('https://api.example.com/jobs');
-      // const data = await res.json();
-  
-      return new Response(JSON.stringify(mockJobs), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } catch (error) {
-      // Return error response with a friendly message
-      return new Response(JSON.stringify({ error: 'Failed to fetch jobs' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+import clientPromise from '../../../lib/mongodb';
+
+export async function GET(request) {
+  try {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
+
+    const client = await clientPromise;
+    const db = client.db("jobsFinder");
+    const items = await db.collection('jobs')
+                          .find({})
+                          .skip(skip)
+                         .limit(limit)
+                          .toArray();
+
+    return new Response(JSON.stringify(items), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch data' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
-  
+}
+
