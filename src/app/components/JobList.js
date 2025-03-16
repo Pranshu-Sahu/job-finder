@@ -9,23 +9,15 @@ const JobList = ({ filters }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Build the query string based on the current page and filters
-  const buildQueryString = (page) => {
-    let query = `page=${page}&limit=10`;
-    if (filters.location)
-      query += `&location=${encodeURIComponent(filters.location)}`;
-    if (filters.salaryMin)
-      query += `&salaryMin=${encodeURIComponent(filters.salaryMin)}`;
-    if (filters.salaryMax)
-      query += `&salaryMax=${encodeURIComponent(filters.salaryMax)}`;
-    return query;
-  };
 
-  // Function to fetch jobs from the API
+
   const fetchJobs = async () => {
     try {
-      const res = await fetch(`/api/jobs?${buildQueryString(page)}`);
-      const newJobs = await res.json();
+      const response = await fetch('/api/jobs?jobType=Engineer');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const newJobs = await response.json();
       if (newJobs.length < 10) {
         setHasMore(false);
       }
@@ -43,7 +35,7 @@ const JobList = ({ filters }) => {
       console.error("Error fetching jobs:", error);
     }
   };
-
+  
   // When filters change, reset the list
   useEffect(() => {
     setJobs([]);

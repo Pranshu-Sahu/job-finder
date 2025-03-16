@@ -44,8 +44,21 @@ const Filters = ({ onApply }) => {
       </div>
       <button
         onClick={handleApply}
-        className="mt-2 px-4 py-2 bg-teal-600 text-white rounded"
-      >
+        className="
+        bg-orange-500
+        hover:bg-orange-600
+        text-white
+        font-semibold
+        py-2
+        px-4
+        mt-3
+        rounded-lg
+        shadow-md shadow-orange-500/40
+        hover:shadow-orange-500/60
+        transition-shadow
+        duration-300
+        focus:outline-none
+      "   >
         Apply Filters
       </button>
     </div>
